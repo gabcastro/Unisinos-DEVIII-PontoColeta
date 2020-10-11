@@ -10,7 +10,7 @@ Consiste na criação de um software seguindo os passos necessários desde a sua
 Para realizar as necessidades da cadeira, definimos como tema a criação de uma aplicação web para divulgação de locais onde é possível realizar o descarte de alguns tipos de produtos / materiais de forma adequada.
 Consiste em uma tela com os categorias possíveis e em cada uma delas os locais ordenado por proximidade da localização do usuário.
 
-Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](docs/DAS.md)
+Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md)
 
 ## Integrantes ##
 
