@@ -13,9 +13,6 @@ namespace PontoColeta.Controllers
     [ApiController]
     [Route("v1/products")]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public class ProductController : ControllerBase
     {
         [HttpGet]

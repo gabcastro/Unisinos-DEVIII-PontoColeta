@@ -38,4 +38,6 @@ Possui as regras de todo o negócio. É a interface que enviará os dados para a
 - .NET Core
 - VSCode para codificar
 - Git 
+- Postman, para realizar os testes da API desenvolvida
+- Swagger, para documentação da API
 - React (ainda a se testar)
