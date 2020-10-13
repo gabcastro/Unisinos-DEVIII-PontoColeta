@@ -33,7 +33,7 @@ namespace PontoColeta.Controllers
         }
 
         /// <summary>
-        /// Get the a category, specifying a code
+        /// Get a category, specifying a code
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -41,7 +41,7 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<Category>>> GetById([FromServices] DataContext context, int id)
+        public async Task<ActionResult<Category>> GetById([FromServices] DataContext context, int id)
         {
             if (id <= 0)
                 return BadRequest();

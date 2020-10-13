@@ -14,7 +14,7 @@ namespace PontoColeta.Models
             Latitude will be between -50.[something] and -57.[something]
             Problems with coordinates positives or shorter, could happen 
         
-            -> Lontitude: vertical
+            -> Longitude: vertical
             -> Latitude: horizontal
         */
         [MinLength(3, ErrorMessage = "Este campo deve conter entre 3 e 10 caracteres")]
