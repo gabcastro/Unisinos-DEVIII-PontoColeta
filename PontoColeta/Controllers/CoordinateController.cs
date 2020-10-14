@@ -84,5 +84,94 @@ namespace PontoColeta.Controllers
 
             return Ok(coordinates);
         }
+
+        /// <summary>
+        /// Add a new coordinate
+        /// Conditions: 
+        ///     - Category must exist
+        ///     - Latitude, longitude and idCategory cannot be the same in a new post
+        /// </summary>
+        /// <param name="context">DataContext</param>
+        /// <param name="model">Coordinate data</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Coordinate>> Post(
+            [FromServices] DataContext context,
+            [FromBody] Coordinate model
+        )
+        {
+            bool isValidCategory = false;
+            bool isInvalidPost = false;
+
+            List<Coordinate> coordinates = context.Coordinates.ToList();
+
+            foreach (var item in context.Categories.ToList())
+            {
+                if (model.IdCategory == item.Id) 
+                {
+                    isValidCategory = true;
+                    break;
+                }
+            }
+
+            if (coordinates.Count > 0)
+            {
+                foreach (var item in context.Coordinates.ToList())
+                {
+                    if (item.Latitude.Equals(model.Latitude) &&
+                        item.Longitude.Equals(model.Longitude) &&
+                        (item.IdCategory == model.IdCategory)
+                    )
+                    {
+                        isInvalidPost = true;
+                        break;
+                    }
+                }
+            }
+             
+            if (ModelState.IsValid && isValidCategory && !isInvalidPost)
+            {
+                context.Coordinates.Add(model);
+                await context.SaveChangesAsync();
+                return CreatedAtAction(nameof(Post), new { Coordinate = model });
+            }
+            else 
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
+        /// <summary>
+        /// Remove a coordinate, specifying a code
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> Delete(
+            [FromServices] DataContext context,
+            int id
+        )
+        {
+            if (id <= 0)
+                return BadRequest();
+
+            var coordinate = await context.Coordinates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (coordinate == null)
+                return NotFound();
+
+            context.Coordinates.Remove(coordinate);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
