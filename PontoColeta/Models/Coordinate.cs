@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PontoColeta.Models
 {
     public class Coordinate
     {
-        [Key]
         public int Id { get; set; }
 
         /* 
@@ -17,22 +17,12 @@ namespace PontoColeta.Models
             -> Longitude: vertical
             -> Latitude: horizontal
         */
-        [MinLength(3, ErrorMessage = "Este campo deve conter entre 3 e 10 caracteres")]
-        [MaxLength(10, ErrorMessage = "Este campo deve conter entre 3 e 10 caracteres")]
         public string Latitude { get; set; }
-
-        [MinLength(3, ErrorMessage = "Este campo deve conter entre 3 e 10 caracteres")]
-        [MaxLength(10, ErrorMessage = "Este campo deve conter entre 3 e 10 caracteres")]
         public string Longitude { get; set; }
-
         /* In the API of Google Maps, it's possible use a name of a place instead coordinates.
         So, something we can save the name without care about geolocation */
         public string NameOfPlace { get; set; }
-
-        [Required(ErrorMessage = "Este campo é obrigatório")]
-        [Range(1, int.MaxValue, ErrorMessage = "Categoria inválida")]
         public int IdCategory { get; set; }
-
         public Category Category { get; set; }
     }
 }
