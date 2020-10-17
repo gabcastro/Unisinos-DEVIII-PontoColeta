@@ -13,7 +13,7 @@ namespace PontoColeta.Controllers
     [ApiController]
     [Route("api/v1/coordinates")]
     [Produces(MediaTypeNames.Application.Json)]
-    public class CoordinateController : ControllerBase
+    public class CoordinateController : Controller
     {
         /// <summary>
         /// Get the list of all coordinates
@@ -27,6 +27,7 @@ namespace PontoColeta.Controllers
         {
             var coordinates = await context.Coordinates
                 .Include(x => x.Category)
+                .AsNoTracking()
                 .ToListAsync();
 
             if (coordinates.Count == 0)
@@ -76,7 +77,7 @@ namespace PontoColeta.Controllers
             var coordinates = await context.Coordinates
                 .Include(x => x.Category)
                 .AsNoTracking()
-                .Where(x => x.IdCategory == idCategory)
+                .Where(x => x.Category.Id == idCategory)
                 .ToListAsync();
             
             if (coordinates.Count == 0)
@@ -111,7 +112,7 @@ namespace PontoColeta.Controllers
 
             foreach (var item in context.Categories.ToList())
             {
-                if (model.IdCategory == item.Id) 
+                if (model.Category.Id == item.Id) 
                 {
                     isValidCategory = true;
                     break;
@@ -124,7 +125,7 @@ namespace PontoColeta.Controllers
                 {
                     if (item.Latitude.Equals(model.Latitude) &&
                         item.Longitude.Equals(model.Longitude) &&
-                        (item.IdCategory == model.IdCategory)
+                        (item.Category.Id == model.Category.Id)
                     )
                     {
                         isInvalidPost = true;

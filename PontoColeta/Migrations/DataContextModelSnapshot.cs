@@ -46,9 +46,6 @@ namespace PontoColeta.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdCategory")
-                        .HasColumnType("int");
-
                     b.Property<string>("Latitude")
                         .IsRequired()
                         .HasColumnType("varchar(11)")

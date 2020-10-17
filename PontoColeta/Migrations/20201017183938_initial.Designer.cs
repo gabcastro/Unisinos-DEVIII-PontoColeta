@@ -10,8 +10,8 @@ using PontoColeta.Data;
 namespace PontoColeta.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201017151059_v1")]
-    partial class v1
+    [Migration("20201017183938_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,9 +46,6 @@ namespace PontoColeta.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdCategory")
                         .HasColumnType("int");
 
                     b.Property<string>("Latitude")

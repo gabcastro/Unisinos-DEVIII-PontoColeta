@@ -11,7 +11,7 @@ Existem algumas restrições de requisito e de sistema principais que têm uma r
 - A linguagem de desenvolvimento utilizada para o sistema será o C#;
 - O Servidor de Aplicação `ainda não está definido`, mas a ideia seria usar a AWS;
 - O Sistema Operacional que dará suporte aos serviços da aplicação deverá ser o LINUX;
-- O Sistema Gerenciador de Banco de Dados escolhido para suportar a aplicação será o MySQL;
+- O Sistema Gerenciador de Banco de Dados escolhido para suportar a aplicação será o SQL Server;
 
 ## Visão de implantação ##
 
@@ -36,8 +36,10 @@ Possui as regras de todo o negócio. É a interface que enviará os dados para a
 
 - C#
 - .NET Core
-- VSCode para codificar
+- VSCode (para codificar)
+- Azure Data Studio (interface com o banco de dados criado)
+- Docker com imagem do MSSQL-Linux
 - Git 
-- Postman, para realizar os testes da API desenvolvida
-- Swagger, para documentação da API
+- Postman (para realizar os testes da API desenvolvida)
+- Swagger (para documentação da API)
 - React (ainda a se testar)

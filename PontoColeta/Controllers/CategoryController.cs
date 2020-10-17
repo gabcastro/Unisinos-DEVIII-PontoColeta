@@ -12,7 +12,7 @@ namespace PontoColeta.Controllers
     [ApiController]
     [Route("api/v1/categories")]
     [Produces(MediaTypeNames.Application.Json)]
-    public class CategoryController : ControllerBase
+    public class CategoryController : Controller
     {
 
         /// <summary>
@@ -25,7 +25,10 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<Category>>> Get([FromServices] DataContext context)
         {
-            var categories = await context.Categories.ToListAsync();
+            var categories = await context.Categories
+                .AsNoTracking()
+                .ToListAsync();
+                
             if (categories.Count == 0)
                 return NotFound();
 
