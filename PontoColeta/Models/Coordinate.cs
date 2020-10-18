@@ -19,8 +19,7 @@ namespace PontoColeta.Models
         /* In the API of Google Maps, it's possible use a name of a place instead coordinates.
         So, something we can save the name without care about geolocation */
         public string NameOfPlace { get; set; }
-        
-        // public int IdCategory { get; set; }
+        public int CategoryId { get; set; }
         public Category Category { get; set; }
     }
 }

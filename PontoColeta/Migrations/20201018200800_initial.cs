@@ -28,7 +28,7 @@ namespace PontoColeta.Migrations
                     Latitude = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false),
                     Longitude = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false),
                     NameOfPlace = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true),
-                    CategoryId = table.Column<int>(nullable: true)
+                    CategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,7 +38,7 @@ namespace PontoColeta.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

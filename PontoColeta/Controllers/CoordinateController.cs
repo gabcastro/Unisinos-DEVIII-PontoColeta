@@ -7,6 +7,7 @@ using PontoColeta.Data;
 using PontoColeta.Models;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
+using PontoColeta.ViewModels.CoordinateViewModels;
 
 namespace PontoColeta.Controllers
 {
@@ -27,6 +28,15 @@ namespace PontoColeta.Controllers
         {
             var coordinates = await context.Coordinates
                 .Include(x => x.Category)
+                .Select(x => new ListCoordinateViewModel
+                {
+                    Id = x.Id,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    NameOfPlace = x.NameOfPlace,
+                    Category = x.Category.Title,
+                    CategoryId = x.CategoryId
+                })
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -51,6 +61,15 @@ namespace PontoColeta.Controllers
                 return BadRequest();
 
             var coordinate = await context.Coordinates
+                .Select(x => new ListCoordinateViewModel
+                {
+                    Id = x.Id,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    NameOfPlace = x.NameOfPlace,
+                    Category = x.Category.Title,
+                    CategoryId = x.CategoryId
+                })
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -65,19 +84,28 @@ namespace PontoColeta.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("{idCategory:int}")]
+        [Route("{categoryId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<Coordinate>>> GetByCategory([FromServices] DataContext context, int idCategory)
+        public async Task<ActionResult<List<Coordinate>>> GetByCategory([FromServices] DataContext context, int categoryId)
         {
-            if (idCategory <= 0)
+            if (categoryId <= 0)
                 return BadRequest();
 
             var coordinates = await context.Coordinates
                 .Include(x => x.Category)
+                .Select(x => new ListCoordinateViewModel
+                {
+                    Id = x.Id,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    NameOfPlace = x.NameOfPlace,
+                    Category = x.Category.Title,
+                    CategoryId = x.CategoryId
+                })
                 .AsNoTracking()
-                .Where(x => x.Category.Id == idCategory)
+                .Where(x => x.CategoryId == categoryId)
                 .ToListAsync();
             
             if (coordinates.Count == 0)
@@ -100,9 +128,9 @@ namespace PontoColeta.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Coordinate>> Post(
+        public async Task<ActionResult<ResultViewModel>> Post(
             [FromServices] DataContext context,
-            [FromBody] Coordinate model
+            [FromBody] EditorCoordinateViewModel model
         )
         {
             bool isValidCategory = false;
@@ -112,7 +140,7 @@ namespace PontoColeta.Controllers
 
             foreach (var item in context.Categories.ToList())
             {
-                if (model.Category.Id == item.Id) 
+                if (model.CategoryId == item.Id) 
                 {
                     isValidCategory = true;
                     break;
@@ -125,7 +153,7 @@ namespace PontoColeta.Controllers
                 {
                     if (item.Latitude.Equals(model.Latitude) &&
                         item.Longitude.Equals(model.Longitude) &&
-                        (item.Category.Id == model.Category.Id)
+                        (item.Category.Id == model.CategoryId)
                     )
                     {
                         isInvalidPost = true;
@@ -133,12 +161,32 @@ namespace PontoColeta.Controllers
                     }
                 }
             }
+
+            model.Validate();
+            if (model.Invalid)
+                return BadRequest(new ResultViewModel
+                {
+                    Success = false,
+                    Message = "Não foi possível cadastrar o produto",
+                    Data = model.Notifications
+                });
+            
              
             if (ModelState.IsValid && isValidCategory && !isInvalidPost)
             {
-                context.Coordinates.Add(model);
+                var coordinate = new Coordinate();
+                coordinate.Latitude = model.Latitude;
+                coordinate.Longitude = model.Longitude;
+                coordinate.NameOfPlace = model.NameOfPlace;
+                coordinate.CategoryId = model.CategoryId;
+
+                context.Coordinates.Add(coordinate);
                 await context.SaveChangesAsync();
-                return CreatedAtAction(nameof(Post), new { Coordinate = model });
+
+                return CreatedAtAction(
+                    nameof(Post), 
+                    new { Coordinate = model }
+                );
             }
             else 
             {
