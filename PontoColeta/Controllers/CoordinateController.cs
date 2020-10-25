@@ -8,6 +8,7 @@ using PontoColeta.Models;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using PontoColeta.ViewModels.CoordinateViewModels;
+using PontoColeta.Repositories;
 
 namespace PontoColeta.Controllers
 {
@@ -16,6 +17,15 @@ namespace PontoColeta.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     public class CoordinateController : Controller
     {
+        private readonly CoordinateRepository _repositoryCoordinate;
+        private readonly CategoryRepository _repositoryCategory;
+
+        public CoordinateController(CoordinateRepository repositoryCoordinate, CategoryRepository repositoryCategory)
+        {
+            _repositoryCoordinate = repositoryCoordinate;
+            _repositoryCategory = repositoryCategory;
+        }
+
         /// <summary>
         /// Get the list of all coordinates
         /// </summary>
@@ -24,21 +34,9 @@ namespace PontoColeta.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<Coordinate>>> Get([FromServices] DataContext context)
+        public ActionResult<List<ListCoordinateViewModel>> Get()
         {
-            var coordinates = await context.Coordinates
-                .Include(x => x.Category)
-                .Select(x => new ListCoordinateViewModel
-                {
-                    Id = x.Id,
-                    Latitude = x.Latitude,
-                    Longitude = x.Longitude,
-                    NameOfPlace = x.NameOfPlace,
-                    Category = x.Category.Title,
-                    CategoryId = x.CategoryId
-                })
-                .AsNoTracking()
-                .ToListAsync();
+            var coordinates = _repositoryCoordinate.Get();                
 
             if (coordinates.Count == 0)
                 return NotFound();
@@ -55,23 +53,12 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<Category>>> GetById([FromServices] DataContext context, int id)
+        public ActionResult<List<ListCoordinateViewModel>> GetById(int id)
         {
             if (id <= 0)
                 return BadRequest();
 
-            var coordinate = await context.Coordinates
-                .Select(x => new ListCoordinateViewModel
-                {
-                    Id = x.Id,
-                    Latitude = x.Latitude,
-                    Longitude = x.Longitude,
-                    NameOfPlace = x.NameOfPlace,
-                    Category = x.Category.Title,
-                    CategoryId = x.CategoryId
-                })
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var coordinate = _repositoryCoordinate.Get(id);
 
             if (coordinate == null)
                 return NotFound();
@@ -88,25 +75,12 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<Coordinate>>> GetByCategory([FromServices] DataContext context, int categoryId)
+        public ActionResult<List<ListCoordinateViewModel>> GetByCategory(int categoryId)
         {
             if (categoryId <= 0)
                 return BadRequest();
 
-            var coordinates = await context.Coordinates
-                .Include(x => x.Category)
-                .Select(x => new ListCoordinateViewModel
-                {
-                    Id = x.Id,
-                    Latitude = x.Latitude,
-                    Longitude = x.Longitude,
-                    NameOfPlace = x.NameOfPlace,
-                    Category = x.Category.Title,
-                    CategoryId = x.CategoryId
-                })
-                .AsNoTracking()
-                .Where(x => x.CategoryId == categoryId)
-                .ToListAsync();
+            var coordinates = _repositoryCoordinate.GetByCategory(categoryId);
             
             if (coordinates.Count == 0)
                 return NotFound();
@@ -120,7 +94,6 @@ namespace PontoColeta.Controllers
         ///     - Category must exist
         ///     - Latitude, longitude and idCategory cannot be the same in a new post
         /// </summary>
-        /// <param name="context">DataContext</param>
         /// <param name="model">Coordinate data</param>
         /// <returns></returns>
         [HttpPost]
@@ -128,17 +101,17 @@ namespace PontoColeta.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ResultViewModel>> Post(
-            [FromServices] DataContext context,
+        public ActionResult<ResultViewModel> Post(
             [FromBody] EditorCoordinateViewModel model
         )
         {
             bool isValidCategory = false;
             bool isInvalidPost = false;
 
-            List<Coordinate> coordinates = context.Coordinates.ToList();
+            List<ListCoordinateViewModel> coordinates = _repositoryCoordinate.Get();
+            List<Category> categories = _repositoryCategory.Get();
 
-            foreach (var item in context.Categories.ToList())
+            foreach (var item in categories)
             {
                 if (model.CategoryId == item.Id) 
                 {
@@ -149,11 +122,11 @@ namespace PontoColeta.Controllers
 
             if (coordinates.Count > 0)
             {
-                foreach (var item in context.Coordinates.ToList())
+                foreach (var item in coordinates)
                 {
                     if (item.Latitude.Equals(model.Latitude) &&
                         item.Longitude.Equals(model.Longitude) &&
-                        (item.Category.Id == model.CategoryId)
+                        (item.CategoryId == model.CategoryId)
                     )
                     {
                         isInvalidPost = true;
@@ -180,8 +153,7 @@ namespace PontoColeta.Controllers
                 coordinate.NameOfPlace = model.NameOfPlace;
                 coordinate.CategoryId = model.CategoryId;
 
-                context.Coordinates.Add(coordinate);
-                await context.SaveChangesAsync();
+                _repositoryCoordinate.Save(coordinate);
 
                 return CreatedAtAction(
                     nameof(Post), 
@@ -203,23 +175,18 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Delete(
-            [FromServices] DataContext context,
-            int id
-        )
+        public ActionResult Delete(int id)
         {
             if (id <= 0)
                 return BadRequest();
 
-            var coordinate = await context.Coordinates
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var coordinateModel = _repositoryCoordinate.Get(id);
 
-            if (coordinate == null)
+            if (coordinateModel == null)
                 return NotFound();
 
-            context.Coordinates.Remove(coordinate);
-            await context.SaveChangesAsync();
+            _repositoryCoordinate.Delete(coordinateModel);
+
             return NoContent();
         }
     }

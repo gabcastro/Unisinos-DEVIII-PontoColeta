@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PontoColeta.Data;
 using PontoColeta.Models;
+using PontoColeta.Repositories;
 
 namespace PontoColeta.Controllers
 {
@@ -14,6 +12,12 @@ namespace PontoColeta.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     public class CategoryController : Controller
     {
+        private readonly CategoryRepository _repository;
+
+        public CategoryController(CategoryRepository repository)
+        {
+            _repository = repository;
+        }
 
         /// <summary>
         /// Get the list of all categories
@@ -23,12 +27,10 @@ namespace PontoColeta.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<Category>>> Get([FromServices] DataContext context)
+        public ActionResult<List<Category>> Get()
         {
-            var categories = await context.Categories
-                .AsNoTracking()
-                .ToListAsync();
-                
+            var categories = _repository.Get();
+
             if (categories.Count == 0)
                 return NotFound();
 
@@ -44,14 +46,12 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Category>> GetById([FromServices] DataContext context, int id)
+        public ActionResult<Category> GetById(int id)
         {
             if (id <= 0)
                 return BadRequest();
 
-            var category = await context.Categories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var category = _repository.Get(id);
 
             if (category == null)
                 return NotFound();
@@ -62,7 +62,6 @@ namespace PontoColeta.Controllers
         /// <summary>
         /// Add a new category
         /// </summary>
-        /// <param name="context">DataContext</param>
         /// <param name="model">Category data</param>
         /// <returns></returns>
         [HttpPost]
@@ -70,15 +69,13 @@ namespace PontoColeta.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Category>> Post(
-            [FromServices] DataContext context,
+        public ActionResult<Category> Post(
             [FromBody] Category model
         )
         {
             if (ModelState.IsValid)
             {
-                context.Categories.Add(model);
-                await context.SaveChangesAsync();
+                _repository.Save(model);
                 return CreatedAtAction(nameof(Post), new { Category = model });
             }
             else 
@@ -96,23 +93,19 @@ namespace PontoColeta.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Delete(
-            [FromServices] DataContext context,
+        public ActionResult Delete(
             int id
         )
         {
             if (id <= 0)
                 return BadRequest();
 
-            var category = await context.Categories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var category = _repository.Get(id);
 
             if (category == null)
                 return NotFound();
 
-            context.Categories.Remove(category);
-            await context.SaveChangesAsync();
+            _repository.Delete(category);
             return NoContent();
         }
     }

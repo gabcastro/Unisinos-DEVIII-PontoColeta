@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PontoColeta.Data;
+using PontoColeta.Repositories;
 
 namespace PontoColeta
 {
@@ -26,7 +27,9 @@ namespace PontoColeta
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<DataContext, DataContext>();
-
+            services.AddTransient<CategoryRepository, CategoryRepository>();
+            services.AddTransient<CoordinateRepository, CoordinateRepository>();
+            
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
