@@ -2,7 +2,7 @@
 
 namespace PontoColeta.Migrations
 {
-    public partial class initial : Migration
+    public partial class attemptAzure1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

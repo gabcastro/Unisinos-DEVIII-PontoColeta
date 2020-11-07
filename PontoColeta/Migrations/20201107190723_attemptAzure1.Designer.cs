@@ -9,8 +9,8 @@ using PontoColeta.Data;
 namespace PontoColeta.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201018200800_initial")]
-    partial class initial
+    [Migration("20201107190723_attemptAzure1")]
+    partial class attemptAzure1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
