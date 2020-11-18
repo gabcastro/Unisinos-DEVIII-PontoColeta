@@ -14,9 +14,3 @@ Para realizar as necessidades da cadeira, definimos como tema a criação de uma
 O Web App é construido de forma a ajudar a identificar locais próximos ao usuário, naquele momento que esteja acessando a página.
 
 Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md)
-
-## Integrantes ##
-
-- [Gabriel Castro Fernandes](https://github.com/gabcastro)
-- [José ](https://github.com/josegsj)
-- [Lucas Emanuel Cardoso](https://github.com/)
