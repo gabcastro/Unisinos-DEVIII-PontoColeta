@@ -14,6 +14,6 @@ Para realizar as necessidades da cadeira, foi definido como tema a criação de 
 
 Para isso foi criada uma API para realização de requests e escritas das categorias e coordenadas dos lugares. Essa API foi levantada em um App Service dentro da Azure, conectado com os serviços de banco de dados e server.
 
-![Diagrama de arquitetura da API](img/arq_azure.png)
+![Diagrama de arquitetura da API](Docs/img/arq_azure.png)
 
 Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md)
