@@ -22,5 +22,6 @@ Abaixo é mostrado um diagrama da arquitetura da API criada.
 
 ## ##
 
-Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md)
+Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md).
+
 Ou, para configurar o ambiente e uso deste projeto, aconselha-se a leitura da [Wiki](https://github.com/gabcastro/Unisinos-DEVIII-PontoColeta/wiki)
