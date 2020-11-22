@@ -20,8 +20,8 @@ Abaixo é mostrado um diagrama da arquitetura da API criada.
 
 ![Diagrama de arquitetura da API](Docs/img/arq_azure.png)
 
-## ##
+## Fontes de documentação ##
 
-Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md).
-
-Ou, para configurar o ambiente e uso deste projeto, aconselha-se a leitura da [Wiki](https://github.com/gabcastro/Unisinos-DEVIII-PontoColeta/wiki)
+- Para maiores informações sobre a arquitetura, acessar o [Documento de arquitetura](Docs/DAS.md)
+- Para configurar o ambiente e uso deste projeto, aconselha-se a leitura da [Wiki](https://github.com/gabcastro/Unisinos-DEVIII-PontoColeta/wiki)
+- Para documentação da API, há a inclusão do Swagger no projeto
